@@ -2,7 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { inspectionsApi, templatesApi } from '../api.js';
 import { downloadCsv } from '../utils/csv.js';
+import { evaluateInspection, type InspectionStatus } from '../utils/evaluate.js';
 import type { Field, Inspection, Template } from '../types.js';
+
+function StatusBadge({ status }: { status: InspectionStatus }) {
+  const cls =
+    status === '합격' ? 'badge--pass' : status === '불합격' ? 'badge--fail' : 'badge--na';
+  return <span className={`badge ${cls}`}>{status}</span>;
+}
 
 // 한 셀 값: 미디어 항목은 첨부 개수, 그 외는 입력값
 function cellFor(ins: Inspection, f: Field): string {
@@ -18,6 +25,7 @@ export default function ResultsList() {
   const [inspections, setInspections] = useState<Inspection[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [templateId, setTemplateId] = useState('');
+  const [status, setStatus] = useState<'' | InspectionStatus>('');
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -36,10 +44,29 @@ export default function ResultsList() {
     () => Object.fromEntries(templates.map((t) => [t.id, t.title])),
     [templates],
   );
+  const fieldsById = useMemo(
+    () => Object.fromEntries(templates.map((t) => [t.id, t.fields])),
+    [templates],
+  );
+
+  // 점검 시점 스냅샷 우선, 없으면 현재 템플릿 항목으로 판정
+  const statusOf = useMemo(() => {
+    const cache = new Map<string, InspectionStatus>();
+    return (ins: Inspection): InspectionStatus => {
+      if (cache.has(ins.id)) return cache.get(ins.id)!;
+      const fields: Field[] = ins.templateSnapshot?.fields?.length
+        ? ins.templateSnapshot.fields
+        : (fieldsById[ins.templateId] ?? []);
+      const s = evaluateInspection(fields, ins.answers).status;
+      cache.set(ins.id, s);
+      return s;
+    };
+  }, [fieldsById]);
 
   const filtered = useMemo(() => {
     return inspections.filter((ins) => {
       if (templateId && ins.templateId !== templateId) return false;
+      if (status && statusOf(ins) !== status) return false;
       if (query) {
         const q = query.toLowerCase();
         const title = (titleById[ins.templateId] ?? '').toLowerCase();
@@ -47,7 +74,13 @@ export default function ResultsList() {
       }
       return true;
     });
-  }, [inspections, templateId, query, titleById]);
+  }, [inspections, templateId, status, query, titleById, statusOf]);
+
+  const summary = useMemo(() => {
+    const s = { 합격: 0, 불합격: 0, 판정없음: 0 } as Record<InspectionStatus, number>;
+    for (const ins of filtered) s[statusOf(ins)]++;
+    return s;
+  }, [filtered, statusOf]);
 
   function exportCsv() {
     const selected = templates.find((t) => t.id === templateId);
@@ -97,12 +130,27 @@ export default function ResultsList() {
             </option>
           ))}
         </select>
+        <select value={status} onChange={(e) => setStatus(e.target.value as '' | InspectionStatus)}>
+          <option value="">모든 판정</option>
+          <option value="합격">합격</option>
+          <option value="불합격">불합격</option>
+          <option value="판정없음">판정없음</option>
+        </select>
         <input
           placeholder="점검자/시트명 검색"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
+
+      {!loading && filtered.length > 0 && (
+        <div className="summary">
+          <span>전체 {filtered.length}</span>
+          <span className="summary__pass">합격 {summary.합격}</span>
+          <span className="summary__fail">불합격 {summary.불합격}</span>
+          {summary.판정없음 > 0 && <span>판정없음 {summary.판정없음}</span>}
+        </div>
+      )}
 
       {loading && <p>불러오는 중…</p>}
       {error && <p className="error">{error}</p>}
@@ -120,6 +168,9 @@ export default function ResultsList() {
                 {ins.inspector && ` · ${ins.inspector}`}
                 {ins.media && ins.media.length > 0 && ` · 📎 ${ins.media.length}`}
               </div>
+            </div>
+            <div className="card__actions">
+              <StatusBadge status={statusOf(ins)} />
             </div>
           </li>
         ))}

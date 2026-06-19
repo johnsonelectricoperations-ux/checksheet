@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { inspectionsApi, mediaUrl, templatesApi } from '../api.js';
+import { evaluateField, evaluateInspection } from '../utils/evaluate.js';
 import type { Field, Inspection, Template } from '../types.js';
 
 export default function ResultDetail() {
@@ -37,6 +38,7 @@ export default function ResultDetail() {
   const fields: Field[] = snapshot?.fields?.length ? snapshot.fields : (template?.fields ?? []);
   const title = snapshot?.title ?? template?.title ?? '점검 결과';
   const mediaByField = groupMedia(inspection);
+  const overall = evaluateInspection(fields, inspection.answers).status;
 
   return (
     <div className="page">
@@ -50,6 +52,10 @@ export default function ResultDetail() {
             목록
           </button>
         </div>
+      </div>
+
+      <div className={`result-banner result-banner--${overall === '불합격' ? 'fail' : overall === '합격' ? 'pass' : 'na'}`}>
+        종합 판정: <strong>{overall}</strong>
       </div>
 
       <div className="result-meta">
@@ -66,11 +72,17 @@ export default function ResultDetail() {
       {fields.map((f) => {
         const media = mediaByField[f.id] ?? [];
         const value = inspection.answers[f.id];
+        const failed = evaluateField(f, value) === 'fail';
         return (
-          <div key={f.id} className="inspect-field">
-            <div className="inspect-field__label">{f.label}</div>
+          <div key={f.id} className={`inspect-field ${failed ? 'inspect-field--fail' : ''}`}>
+            <div className="inspect-field__label">
+              {f.label}
+              {failed && <span className="badge badge--fail badge--inline">불합격</span>}
+            </div>
             {f.type !== 'photo' && f.type !== 'video' && (
-              <div className="result-value">{formatValue(value)}</div>
+              <div className={`result-value ${failed ? 'result-value--fail' : ''}`}>
+                {formatValue(value)}
+              </div>
             )}
             {media.length > 0 && <MediaGrid media={media} />}
           </div>
