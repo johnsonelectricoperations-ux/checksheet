@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { requireAdmin } from '../auth.js';
 import {
   createTemplate,
   duplicateTemplate,
@@ -70,15 +71,15 @@ router.get('/:id', (req, res) => {
   res.json(tpl);
 });
 
-// 생성
-router.post('/', (req, res) => {
+// 생성 (관리자)
+router.post('/', requireAdmin, (req, res) => {
   const v = validate(req.body);
   if (!v.ok) return res.status(400).json({ error: v.error });
   res.status(201).json(createTemplate(v.data));
 });
 
-// 수정 (version 증가)
-router.put('/:id', (req, res) => {
+// 수정 (관리자, version 증가)
+router.put('/:id', requireAdmin, (req, res) => {
   const v = validate(req.body);
   if (!v.ok) return res.status(400).json({ error: v.error });
   const updated = updateTemplate(req.params.id, v.data);
@@ -86,15 +87,15 @@ router.put('/:id', (req, res) => {
   res.json(updated);
 });
 
-// 복제
-router.post('/:id/duplicate', (req, res) => {
+// 복제 (관리자)
+router.post('/:id/duplicate', requireAdmin, (req, res) => {
   const dup = duplicateTemplate(req.params.id);
   if (!dup) return res.status(404).json({ error: '템플릿을 찾을 수 없습니다.' });
   res.status(201).json(dup);
 });
 
-// 활성/비활성 토글
-router.patch('/:id/active', (req, res) => {
+// 활성/비활성 토글 (관리자)
+router.patch('/:id/active', requireAdmin, (req, res) => {
   const active = req.body?.active;
   if (typeof active !== 'boolean') {
     return res.status(400).json({ error: 'active(boolean) 가 필요합니다.' });

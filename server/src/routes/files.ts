@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { config } from '../config.js';
+import { requireAdmin } from '../auth.js';
 import { addFile, getFile } from '../repos/files.js';
 
 const router = Router();
@@ -14,8 +15,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 200 * 1024 * 1024 } });
 
-// 참조용 파일 업로드 (템플릿 항목 설명에 붙는 사진/동영상)
-router.post('/', upload.single('file'), (req, res) => {
+// 참조용 파일 업로드 (템플릿 작성 → 관리자)
+router.post('/', requireAdmin, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: '파일이 없습니다.' });
   const type = req.body.type === 'video' ? 'video' : 'photo';
   const stored = addFile({

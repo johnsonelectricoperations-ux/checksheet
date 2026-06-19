@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router-dom';
 import { useSync } from './hooks/useSync.js';
+import { useAuth } from './hooks/useAuth.js';
+import { authApi } from './api.js';
+import { clearSession } from './auth/session.js';
 import { startAutoSync } from './offline/sync.js';
+import Login from './pages/Login.js';
 import TemplateList from './pages/TemplateList.js';
 import TemplateEditor from './pages/TemplateEditor.js';
 import InspectionForm from './pages/InspectionForm.js';
@@ -10,11 +14,22 @@ import ResultDetail from './pages/ResultDetail.js';
 
 export default function App() {
   const { online, pending, syncing, syncNow } = useSync();
+  const { user, isAdmin } = useAuth();
 
-  // 앱 시작 시 자동 동기화 시작 (온라인 복귀 + 주기 폴링)
   useEffect(() => {
     startAutoSync();
   }, []);
+
+  if (!user) return <Login />;
+
+  async function logout() {
+    try {
+      await authApi.logout();
+    } catch {
+      /* 오프라인이어도 로컬 세션은 정리 */
+    }
+    clearSession();
+  }
 
   return (
     <BrowserRouter>
@@ -34,17 +49,32 @@ export default function App() {
               </span>
             )}
             <span className={`status ${online ? 'status--online' : 'status--offline'}`}>
-              {online ? '🟢 온라인' : '🔴 오프라인'}
+              {online ? '🟢' : '🔴'}
             </span>
+          </div>
+          <div className="app__user">
+            <span className="app__username">
+              {user.name || user.username}
+              {isAdmin && ' (관리자)'}
+            </span>
+            <button className="btn btn--sm" onClick={logout}>
+              로그아웃
+            </button>
           </div>
         </header>
 
         <main className="app__main">
           <Routes>
-            <Route path="/" element={<TemplateList />} />
-            <Route path="/templates/new" element={<TemplateEditor />} />
-            <Route path="/templates/:id" element={<TemplateEditor />} />
-            <Route path="/inspect/:templateId" element={<InspectionForm />} />
+            <Route path="/" element={<TemplateList isAdmin={isAdmin} />} />
+            <Route
+              path="/templates/new"
+              element={isAdmin ? <TemplateEditor /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/templates/:id"
+              element={isAdmin ? <TemplateEditor /> : <Navigate to="/" replace />}
+            />
+            <Route path="/inspect/:templateId" element={<InspectionForm inspectorName={user.name} />} />
             <Route path="/results" element={<ResultsList />} />
             <Route path="/results/:id" element={<ResultDetail />} />
           </Routes>

@@ -1,18 +1,49 @@
+import { clearSession, getToken, type AuthUser } from './auth/session.js';
 import type { Inspection, InspectionInput, MediaFile, Template, TemplateInput } from './types.js';
 
 const BASE = '/api';
 
+// 로그인 토큰을 모든 요청에 부착. 401 이면 세션 정리(로그인 화면으로).
+export function authHeaders(extra?: Record<string, string>): Record<string, string> {
+  const token = getToken();
+  return {
+    ...(extra ?? {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+function handleUnauthorized(status: number) {
+  if (status === 401) clearSession();
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
     ...init,
+    headers: authHeaders({ 'Content-Type': 'application/json', ...(init?.headers as object) }),
   });
   if (!res.ok) {
+    handleUnauthorized(res.status);
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error ?? `요청 실패 (${res.status})`);
   }
   return res.json() as Promise<T>;
 }
+
+export const authApi = {
+  login: (username: string, password: string) =>
+    request<{ token: string; expiresAt: string; user: AuthUser }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    }),
+  logout: () => request<{ ok: boolean }>('/auth/logout', { method: 'POST' }),
+  me: () => request<AuthUser>('/auth/me'),
+};
+
+export const usersApi = {
+  list: () => request<AuthUser[]>('/users'),
+  create: (input: { username: string; password: string; name?: string; role?: 'admin' | 'worker' }) =>
+    request<AuthUser>('/users', { method: 'POST', body: JSON.stringify(input) }),
+};
 
 export const templatesApi = {
   list: (includeInactive = false) =>
@@ -37,18 +68,20 @@ export const filesApi = {
     const form = new FormData();
     form.append('type', type);
     form.append('file', file, filename ?? 'upload');
-    const res = await fetch(`${BASE}/files`, { method: 'POST', body: form });
+    const res = await fetch(`${BASE}/files`, { method: 'POST', body: form, headers: authHeaders() });
     if (!res.ok) {
+      handleUnauthorized(res.status);
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error ?? `파일 업로드 실패 (${res.status})`);
     }
     return res.json() as Promise<{ id: string; type: 'photo' | 'video'; url: string }>;
   },
-  url: (id: string) => `${BASE}/files/${id}`,
+  // <img>/<video> 는 헤더를 못 보내므로 토큰을 쿼리로 부착
+  url: (id: string) => `${BASE}/files/${id}?token=${getToken() ?? ''}`,
 };
 
-// 점검 결과 미디어 URL
-export const mediaUrl = (id: string) => `${BASE}/media/${id}`;
+// 점검 결과 미디어 URL (토큰 쿼리 부착)
+export const mediaUrl = (id: string) => `${BASE}/media/${id}?token=${getToken() ?? ''}`;
 
 export const inspectionsApi = {
   list: (templateId?: string) =>
@@ -69,8 +102,10 @@ export const inspectionsApi = {
     const res = await fetch(`${BASE}/inspections/${inspectionId}/media`, {
       method: 'POST',
       body: form,
+      headers: authHeaders(),
     });
     if (!res.ok) {
+      handleUnauthorized(res.status);
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error ?? `미디어 업로드 실패 (${res.status})`);
     }

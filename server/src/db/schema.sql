@@ -56,5 +56,25 @@ CREATE TABLE IF NOT EXISTS files (
   created_at   TEXT NOT NULL
 );
 
+-- 사용자 (관리자 / 작업자)
+CREATE TABLE IF NOT EXISTS users (
+  id            TEXT PRIMARY KEY,             -- UUID
+  username      TEXT NOT NULL UNIQUE,
+  name          TEXT NOT NULL DEFAULT '',
+  password_hash TEXT NOT NULL,                -- scrypt: salt:hash
+  role          TEXT NOT NULL DEFAULT 'worker', -- 'admin' | 'worker'
+  created_at    TEXT NOT NULL
+);
+
+-- 로그인 세션 토큰
+CREATE TABLE IF NOT EXISTS sessions (
+  token      TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_inspections_template ON inspections(template_id);
 CREATE INDEX IF NOT EXISTS idx_media_inspection ON media_files(inspection_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);

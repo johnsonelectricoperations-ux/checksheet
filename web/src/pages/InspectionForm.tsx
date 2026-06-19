@@ -9,12 +9,12 @@ import { enqueueInspection } from '../offline/store.js';
 import { refreshPendingCount, syncPending } from '../offline/sync.js';
 import type { Field, Template } from '../types.js';
 
-export default function InspectionForm() {
+export default function InspectionForm({ inspectorName = '' }: { inspectorName?: string }) {
   const { templateId } = useParams();
   const navigate = useNavigate();
 
   const [template, setTemplate] = useState<Template | null>(null);
-  const [inspector, setInspector] = useState('');
+  const [inspector, setInspector] = useState(inspectorName);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [mediaByField, setMediaByField] = useState<Record<string, LocalMedia[]>>({});
   const [loading, setLoading] = useState(true);

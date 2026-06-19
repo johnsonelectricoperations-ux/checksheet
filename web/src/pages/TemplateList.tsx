@@ -4,7 +4,7 @@ import { templatesApi } from '../api.js';
 import { cacheTemplates, getCachedTemplates } from '../offline/store.js';
 import type { Template } from '../types.js';
 
-export default function TemplateList() {
+export default function TemplateList({ isAdmin }: { isAdmin: boolean }) {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [includeInactive, setIncludeInactive] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -52,9 +52,11 @@ export default function TemplateList() {
     <div className="page">
       <div className="page__bar">
         <h2>점검시트 목록</h2>
-        <button className="btn btn--primary" onClick={() => navigate('/templates/new')}>
-          + 신규 생성
-        </button>
+        {isAdmin && (
+          <button className="btn btn--primary" onClick={() => navigate('/templates/new')}>
+            + 신규 생성
+          </button>
+        )}
       </div>
 
       <label className="checkbox">
@@ -77,9 +79,13 @@ export default function TemplateList() {
         {templates.map((t) => (
           <li key={t.id} className={`card ${t.active ? '' : 'card--inactive'}`}>
             <div className="card__main">
-              <Link to={`/templates/${t.id}`} className="card__title">
-                {t.title}
-              </Link>
+              {isAdmin ? (
+                <Link to={`/templates/${t.id}`} className="card__title">
+                  {t.title}
+                </Link>
+              ) : (
+                <span className="card__title">{t.title}</span>
+              )}
               <div className="card__meta">
                 항목 {t.fields.length}개 · v{t.version}
                 {!t.active && ' · 비활성'}
@@ -92,12 +98,19 @@ export default function TemplateList() {
                   점검 시작
                 </button>
               )}
-              <button className="btn" onClick={() => onDuplicate(t.id)}>
-                복제
-              </button>
-              <button className="btn" onClick={() => onToggleActive(t)}>
-                {t.active ? '비활성화' : '활성화'}
-              </button>
+              {isAdmin && (
+                <>
+                  <button className="btn" onClick={() => navigate(`/templates/${t.id}`)}>
+                    편집
+                  </button>
+                  <button className="btn" onClick={() => onDuplicate(t.id)}>
+                    복제
+                  </button>
+                  <button className="btn" onClick={() => onToggleActive(t)}>
+                    {t.active ? '비활성화' : '활성화'}
+                  </button>
+                </>
+              )}
             </div>
           </li>
         ))}
