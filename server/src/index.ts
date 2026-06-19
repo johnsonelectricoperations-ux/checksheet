@@ -20,10 +20,10 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// 라우트 (단계별로 추가 예정)
-// import templates from './routes/templates.js';   // 1단계
+// 라우트
+import templates from './routes/templates.js';
+app.use('/api/templates', templates);
 // import inspections from './routes/inspections.js'; // 2단계
-// app.use('/api/templates', templates);
 // app.use('/api/inspections', inspections);
 
 app.listen(config.port, () => {
