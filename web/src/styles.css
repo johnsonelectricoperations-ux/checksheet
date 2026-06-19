@@ -27,11 +27,49 @@ body {
   margin: 0;
 }
 
+.app__nav {
+  display: flex;
+  gap: 16px;
+  margin-left: 20px;
+  margin-right: auto;
+}
+.app__nav a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 15px;
+}
 .app__status {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.filters input {
+  flex: 1;
+  min-width: 160px;
+}
+
+.result-meta {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #555;
+  display: grid;
+  gap: 4px;
+}
+.result-value {
+  font-size: 16px;
+  font-weight: 500;
 }
 .status {
   font-size: 14px;

@@ -5,6 +5,8 @@ import { startAutoSync } from './offline/sync.js';
 import TemplateList from './pages/TemplateList.js';
 import TemplateEditor from './pages/TemplateEditor.js';
 import InspectionForm from './pages/InspectionForm.js';
+import ResultsList from './pages/ResultsList.js';
+import ResultDetail from './pages/ResultDetail.js';
 
 export default function App() {
   const { online, pending, syncing, syncNow } = useSync();
@@ -21,6 +23,10 @@ export default function App() {
           <Link to="/" className="app__logo">
             현장 점검시트
           </Link>
+          <nav className="app__nav">
+            <Link to="/">점검시트</Link>
+            <Link to="/results">결과</Link>
+          </nav>
           <div className="app__status" onClick={syncNow} title="지금 동기화">
             {pending > 0 && (
               <span className="status status--pending">
@@ -39,6 +45,8 @@ export default function App() {
             <Route path="/templates/new" element={<TemplateEditor />} />
             <Route path="/templates/:id" element={<TemplateEditor />} />
             <Route path="/inspect/:templateId" element={<InspectionForm />} />
+            <Route path="/results" element={<ResultsList />} />
+            <Route path="/results/:id" element={<ResultDetail />} />
           </Routes>
         </main>
       </div>

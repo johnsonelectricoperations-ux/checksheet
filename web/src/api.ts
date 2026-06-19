@@ -47,6 +47,9 @@ export const filesApi = {
   url: (id: string) => `${BASE}/files/${id}`,
 };
 
+// 점검 결과 미디어 URL
+export const mediaUrl = (id: string) => `${BASE}/media/${id}`;
+
 export const inspectionsApi = {
   list: (templateId?: string) =>
     request<Inspection[]>(`/inspections${templateId ? `?templateId=${templateId}` : ''}`),
