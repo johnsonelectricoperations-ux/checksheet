@@ -1,0 +1,24 @@
+# 사내 PC 1대에서 서버+웹을 함께 실행하기 위한 구성 (0단계 골격)
+# 운영 빌드는 단계가 진행되면서 보강한다.
+services:
+  server:
+    build: ./server
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - DATA_DIR=/data
+    volumes:
+      - checksheet-data:/data   # DB와 미디어 파일을 영구 보관
+    restart: unless-stopped
+
+  web:
+    build: ./web
+    ports:
+      - "8080:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  checksheet-data:

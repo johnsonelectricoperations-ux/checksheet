@@ -4,14 +4,14 @@
 
 ---
 
-## 0단계. 프로젝트 골격
+## 0단계. 프로젝트 골격 ✅
 
-- [ ] 저장소 구조 설계 (server / web(PWA) 분리)
-- [ ] 백엔드(Node.js + Express) 기본 서버 세팅
-- [ ] 데이터베이스(PostgreSQL/SQLite) 연결 및 스키마 초안
-- [ ] 프론트엔드(React + TypeScript, PWA) 기본 세팅
-- [ ] Docker Compose로 사내 PC 배포 구성 초안
-- [ ] 개발/실행 방법 README 작성
+- [x] 저장소 구조 설계 (server / web(PWA) 분리)
+- [x] 백엔드(Node.js + Express) 기본 서버 세팅 (헬스체크 동작)
+- [x] 데이터베이스(SQLite) 연결 및 스키마 초안 (templates/inspections/media_files)
+- [x] 프론트엔드(React + TypeScript, PWA) 기본 세팅 (온/오프라인 표시, SW 생성)
+- [x] Docker Compose로 사내 PC 배포 구성 초안
+- [x] 개발/실행 방법 README 작성
 
 ## 1단계. 점검시트 템플릿 관리 (핵심)
 

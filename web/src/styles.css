@@ -1,0 +1,44 @@
+:root {
+  font-family: system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --primary: #1565c0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f5f6f8;
+  color: #1a1a1a;
+}
+
+.app__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--primary);
+  color: #fff;
+}
+
+.app__header h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.status {
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.app__main {
+  padding: 24px 16px;
+}
+
+.placeholder {
+  line-height: 1.7;
+  color: #555;
+}
