@@ -8,7 +8,7 @@ const dataDir = process.env.DATA_DIR
   : resolve(__dirname, '../data');
 
 export const config = {
-  port: Number(process.env.PORT ?? 4000),
+  port: Number(process.env.PORT ?? 5008),
   dataDir,
   dbPath: process.env.DB_PATH ?? join(dataDir, 'checksheet.db'),
   // 사진/동영상 등 미디어 파일 저장 위치 (대용량 → 파일 스토리지)

@@ -10,5 +10,5 @@ COPY . .
 RUN npm run build
 
 ENV DATA_DIR=/data
-EXPOSE 4000
+EXPOSE 5008
 CMD ["npm", "start"]

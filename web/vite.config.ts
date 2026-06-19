@@ -40,7 +40,7 @@ export default defineConfig({
   server: {
     host: true, // 사내망의 다른 기기(태블릿)에서 접속 가능하게
     proxy: {
-      '/api': 'http://localhost:4000',
+      '/api': 'http://localhost:5008',
     },
   },
 });

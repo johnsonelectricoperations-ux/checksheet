@@ -4,9 +4,9 @@ services:
   server:
     build: ./server
     ports:
-      - "4000:4000"
+      - "5008:5008"
     environment:
-      - PORT=4000
+      - PORT=5008
       - DATA_DIR=/data
     volumes:
       - checksheet-data:/data   # DB와 미디어 파일을 영구 보관

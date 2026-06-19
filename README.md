@@ -44,10 +44,10 @@ checksheet/
 cd server
 npm install
 npm run migrate   # DB 스키마 초기화
-npm run dev       # http://localhost:4000
+npm run dev       # http://localhost:5008
 ```
 
-헬스체크: `curl http://localhost:4000/api/health`
+헬스체크: `curl http://localhost:5008/api/health`
 
 ### 프론트엔드 (PWA)
 
@@ -57,7 +57,7 @@ npm install
 npm run dev       # http://localhost:5173 (사내망의 태블릿에서도 접속 가능)
 ```
 
-`/api` 요청은 백엔드(4000)로 프록시된다.
+`/api` 요청은 백엔드(5008)로 프록시된다.
 
 ---
 
@@ -68,7 +68,7 @@ docker compose up -d --build
 ```
 
 - 웹: `http://<서버IP>:8080`
-- API: `http://<서버IP>:4000`
+- API: `http://<서버IP>:5008`
 - DB와 미디어 파일은 `checksheet-data` 볼륨에 영구 보관
 
 ---
