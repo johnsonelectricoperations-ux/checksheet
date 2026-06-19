@@ -30,6 +30,18 @@ function validate(body: unknown): { ok: true; data: any } | { ok: false; error: 
   if (typeof b.title !== 'string' || b.title.trim() === '') {
     return { ok: false, error: '제목은 필수입니다.' };
   }
+  const recipients = (b.recipients ?? []) as unknown;
+  if (recipients !== undefined) {
+    if (!Array.isArray(recipients)) {
+      return { ok: false, error: 'recipients 는 배열이어야 합니다.' };
+    }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    for (const r of recipients) {
+      if (typeof r !== 'string' || !emailRe.test(r)) {
+        return { ok: false, error: `올바르지 않은 이메일 형식: ${r}` };
+      }
+    }
+  }
   const fields = (b.fields ?? []) as Field[];
   if (!Array.isArray(fields)) {
     return { ok: false, error: 'fields 는 배열이어야 합니다.' };

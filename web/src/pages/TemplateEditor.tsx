@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { templatesApi } from '../api.js';
+import RecipientsEditor from '../components/RecipientsEditor.js';
 import { FIELD_TYPE_LABELS, type Field, type FieldType } from '../types.js';
 
 function newField(order: number): Field {
@@ -267,17 +268,8 @@ export default function TemplateEditor() {
       </button>
 
       <h3 className="section">수신자 (메일 발송은 후속 단계)</h3>
-      <textarea
-        className="field"
-        rows={2}
-        placeholder="이메일을 쉼표 또는 줄바꿈으로 구분"
-        value={recipients.join(', ')}
-        onChange={(e) =>
-          setRecipients(
-            e.target.value.split(/[,\n]/).map((s) => s.trim()).filter(Boolean),
-          )
-        }
-      />
+      <p className="hint">점검 완료 결과를 받을 이메일을 등록합니다. (발송 기능은 6단계에서 연동)</p>
+      <RecipientsEditor recipients={recipients} onChange={setRecipients} />
     </div>
   );
 }
