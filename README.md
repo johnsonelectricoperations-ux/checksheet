@@ -103,6 +103,31 @@ docker compose up -d --build
 
 ---
 
+## 데이터 백업 / 복원
+
+DB와 미디어 파일은 Docker 볼륨(`checksheet-data`)에 보관됩니다. 정기 백업을 권장합니다.
+
+```bash
+# 백업 (backups/checksheet-<timestamp>.tar.gz 생성)
+./scripts/backup.sh
+
+# 복원 (서비스 중지 후) — 기존 데이터를 덮어씀
+docker compose down
+./scripts/restore.sh backups/checksheet-20260619-120000.tar.gz
+docker compose up -d
+```
+
+매일 자동 백업하려면 cron 에 등록하세요:
+
+```bash
+# 매일 새벽 2시 백업 (crontab -e)
+0 2 * * * cd /path/to/checksheet && ./scripts/backup.sh >> backups/backup.log 2>&1
+```
+
+> 백업 파일은 정기적으로 **다른 PC/외장 매체로 복사**해 두는 것이 안전합니다(서버 PC 고장 대비).
+
+---
+
 ## 개발 단계
 
 | 단계 | 내용 | 상태 |
