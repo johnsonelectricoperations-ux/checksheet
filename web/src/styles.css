@@ -326,6 +326,25 @@ select {
   font-size: 12px;
 }
 
+/* 선택적 첨부 */
+.attach-toggle {
+  margin-top: 10px;
+  border: 1px dashed #bbb;
+  background: #fafafa;
+  color: #666;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.attach {
+  margin-top: 10px;
+}
+.attach__buttons {
+  display: flex;
+  gap: 8px;
+}
+
 /* 수신자 칩 */
 .chips {
   display: flex;

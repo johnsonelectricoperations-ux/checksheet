@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { templatesApi } from '../api.js';
 import MediaCapture, { type LocalMedia } from '../components/MediaCapture.js';
+import OptionalAttachments from '../components/OptionalAttachments.js';
 import { cacheTemplate, getCachedTemplate } from '../offline/store.js';
 import { enqueueInspection } from '../offline/store.js';
 import { refreshPendingCount, syncPending } from '../offline/sync.js';
@@ -143,6 +144,13 @@ export default function InspectionForm() {
           </div>
           {renderInput(f, answers[f.id], (v) => setAnswer(f.id, v), mediaByField[f.id] ?? [], (items) =>
             setMediaByField((m) => ({ ...m, [f.id]: items })),
+          )}
+          {/* 사진/동영상 항목이 아닌 경우, 필요할 때만 선택적으로 첨부 */}
+          {f.type !== 'photo' && f.type !== 'video' && (
+            <OptionalAttachments
+              items={mediaByField[f.id] ?? []}
+              onChange={(items) => setMediaByField((m) => ({ ...m, [f.id]: items }))}
+            />
           )}
         </div>
       ))}
