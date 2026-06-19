@@ -326,6 +326,40 @@ select {
   font-size: 12px;
 }
 
+/* 빌더: 항목 설명/참조자료 */
+.builder__guide {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #eee;
+}
+.builder__desc {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* 점검 화면: 참조자료 보기 */
+.guide-view {
+  background: #f1f8e9;
+  border-left: 3px solid #7cb342;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+.guide-view__desc {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #33691e;
+  white-space: pre-wrap;
+}
+.guide-view__toggle {
+  border: none;
+  background: none;
+  color: #558b2f;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
 /* 선택적 첨부 */
 .attach-toggle {
   margin-top: 10px;

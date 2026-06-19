@@ -24,6 +24,12 @@ export interface MediaOptions {
   maxDurationSec?: number; // 동영상 최대 길이(초)
 }
 
+// 점검 항목에 붙는 참조 미디어 (점검 시 작업자가 참고)
+export interface GuideMedia {
+  id: string; // files 저장소의 파일 id
+  type: 'photo' | 'video';
+}
+
 // 점검 항목 정의
 export interface Field {
   id: string;
@@ -31,6 +37,8 @@ export interface Field {
   label: string;
   required: boolean;
   order: number;
+  description?: string; // 항목 설명 (점검 시 참고)
+  guideMedia?: GuideMedia[]; // 참조용 사진/동영상
   options?: string[]; // select 용 선택지
   criteria?: NumberCriteria; // number 용 합격기준
   media?: MediaOptions; // photo/video 용 옵션

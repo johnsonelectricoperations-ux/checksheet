@@ -44,5 +44,17 @@ CREATE TABLE IF NOT EXISTS media_files (
   FOREIGN KEY (inspection_id) REFERENCES inspections(id)
 );
 
+-- 범용 파일 저장소 (점검 항목의 참조용 사진/동영상 등)
+-- 점검 결과 미디어(media_files)와 달리 템플릿 작성 시점에 업로드되어 특정 결과에 묶이지 않는다.
+CREATE TABLE IF NOT EXISTS files (
+  id           TEXT PRIMARY KEY,             -- UUID
+  type         TEXT NOT NULL DEFAULT 'photo',-- 'photo' | 'video'
+  mime         TEXT NOT NULL DEFAULT '',
+  size         INTEGER NOT NULL DEFAULT 0,
+  filename     TEXT NOT NULL DEFAULT '',
+  storage_path TEXT NOT NULL,
+  created_at   TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_inspections_template ON inspections(template_id);
 CREATE INDEX IF NOT EXISTS idx_media_inspection ON media_files(inspection_id);

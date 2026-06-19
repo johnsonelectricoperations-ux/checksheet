@@ -31,12 +31,19 @@ export interface MediaOptions {
   maxDurationSec?: number;
 }
 
+export interface GuideMedia {
+  id: string;
+  type: 'photo' | 'video';
+}
+
 export interface Field {
   id: string;
   type: FieldType;
   label: string;
   required: boolean;
   order: number;
+  description?: string; // 항목 설명 (점검 시 참고)
+  guideMedia?: GuideMedia[]; // 참조용 사진/동영상
   options?: string[];
   criteria?: NumberCriteria;
   media?: MediaOptions;

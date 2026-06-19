@@ -8,6 +8,19 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        runtimeCaching: [
+          {
+            // 참조용 미디어: 한 번 열어보면 캐시되어 오프라인에서도 참고 가능
+            urlPattern: /\/api\/files\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'guide-files',
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+        ],
+      },
       manifest: {
         name: '현장 점검시트',
         short_name: '점검시트',

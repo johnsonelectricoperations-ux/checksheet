@@ -31,6 +31,22 @@ export const templatesApi = {
     }),
 };
 
+// 참조용 파일(템플릿 항목 설명에 붙는 사진/동영상)
+export const filesApi = {
+  upload: async (file: Blob, type: 'photo' | 'video', filename?: string) => {
+    const form = new FormData();
+    form.append('type', type);
+    form.append('file', file, filename ?? 'upload');
+    const res = await fetch(`${BASE}/files`, { method: 'POST', body: form });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? `파일 업로드 실패 (${res.status})`);
+    }
+    return res.json() as Promise<{ id: string; type: 'photo' | 'video'; url: string }>;
+  },
+  url: (id: string) => `${BASE}/files/${id}`,
+};
+
 export const inspectionsApi = {
   list: (templateId?: string) =>
     request<Inspection[]>(`/inspections${templateId ? `?templateId=${templateId}` : ''}`),

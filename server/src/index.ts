@@ -24,9 +24,11 @@ app.get('/api/health', (_req, res) => {
 import templates from './routes/templates.js';
 import inspections from './routes/inspections.js';
 import media from './routes/media.js';
+import files from './routes/files.js';
 app.use('/api/templates', templates);
 app.use('/api/inspections', inspections);
 app.use('/api/media', media);
+app.use('/api/files', files);
 
 app.listen(config.port, () => {
   console.log(`[server] http://localhost:${config.port} 에서 실행 중`);

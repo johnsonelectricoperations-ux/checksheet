@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { templatesApi } from '../api.js';
 import MediaCapture, { type LocalMedia } from '../components/MediaCapture.js';
 import OptionalAttachments from '../components/OptionalAttachments.js';
+import GuideView from '../components/GuideView.js';
 import { cacheTemplate, getCachedTemplate } from '../offline/store.js';
 import { enqueueInspection } from '../offline/store.js';
 import { refreshPendingCount, syncPending } from '../offline/sync.js';
@@ -142,6 +143,7 @@ export default function InspectionForm() {
             {f.label}
             {f.required && <span className="req"> *</span>}
           </div>
+          <GuideView field={f} />
           {renderInput(f, answers[f.id], (v) => setAnswer(f.id, v), mediaByField[f.id] ?? [], (items) =>
             setMediaByField((m) => ({ ...m, [f.id]: items })),
           )}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { templatesApi } from '../api.js';
 import RecipientsEditor from '../components/RecipientsEditor.js';
+import GuideMediaEditor from '../components/GuideMediaEditor.js';
 import { FIELD_TYPE_LABELS, type Field, type FieldType } from '../types.js';
 
 function newField(order: number): Field {
@@ -242,6 +243,20 @@ export default function TemplateEditor() {
                   )}
                 </>
               )}
+            </div>
+
+            <div className="builder__guide">
+              <textarea
+                className="builder__desc"
+                rows={2}
+                placeholder="항목 설명 (점검 시 참고용 - 예: 정상 기준, 주의사항)"
+                value={f.description ?? ''}
+                onChange={(e) => updateField(f.id, { description: e.target.value })}
+              />
+              <GuideMediaEditor
+                items={f.guideMedia ?? []}
+                onChange={(items) => updateField(f.id, { guideMedia: items })}
+              />
             </div>
 
             <div className="builder__row builder__move">
