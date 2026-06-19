@@ -40,13 +40,13 @@ export const inspectionsApi = {
   // 미디어는 multipart 로 별도 업로드 (텍스트 결과와 분리)
   uploadMedia: async (
     inspectionId: string,
-    params: { mediaId: string; fieldId: string; type: 'photo' | 'video'; file: File },
+    params: { mediaId: string; fieldId: string; type: 'photo' | 'video'; file: Blob; filename?: string },
   ): Promise<MediaFile> => {
     const form = new FormData();
     form.append('mediaId', params.mediaId);
     form.append('fieldId', params.fieldId);
     form.append('type', params.type);
-    form.append('file', params.file);
+    form.append('file', params.file, params.filename ?? 'upload');
     const res = await fetch(`${BASE}/inspections/${inspectionId}/media`, {
       method: 'POST',
       body: form,

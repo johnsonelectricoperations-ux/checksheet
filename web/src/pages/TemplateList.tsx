@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { templatesApi } from '../api.js';
+import { cacheTemplates, getCachedTemplates } from '../offline/store.js';
 import type { Template } from '../types.js';
 
 export default function TemplateList() {
@@ -14,9 +15,19 @@ export default function TemplateList() {
     setLoading(true);
     setError('');
     try {
-      setTemplates(await templatesApi.list(includeInactive));
+      const list = await templatesApi.list(includeInactive);
+      setTemplates(list);
+      // 온라인일 때 받아온 목록을 캐시 (오프라인 점검 대비)
+      void cacheTemplates(list);
     } catch (e) {
-      setError((e as Error).message);
+      // 오프라인 등 실패 시 캐시에서 불러오기
+      const cached = await getCachedTemplates();
+      if (cached.length > 0) {
+        setTemplates(includeInactive ? cached : cached.filter((t) => t.active));
+        setError('오프라인: 저장된 목록을 표시합니다.');
+      } else {
+        setError((e as Error).message);
+      }
     } finally {
       setLoading(false);
     }

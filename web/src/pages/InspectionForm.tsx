@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { inspectionsApi, templatesApi } from '../api.js';
+import { templatesApi } from '../api.js';
 import MediaCapture, { type LocalMedia } from '../components/MediaCapture.js';
+import { cacheTemplate, getCachedTemplate } from '../offline/store.js';
+import { enqueueInspection } from '../offline/store.js';
+import { refreshPendingCount, syncPending } from '../offline/sync.js';
 import type { Field, Template } from '../types.js';
 
 export default function InspectionForm() {
@@ -19,8 +22,16 @@ export default function InspectionForm() {
   useEffect(() => {
     templatesApi
       .get(templateId!)
-      .then(setTemplate)
-      .catch((e) => setError((e as Error).message))
+      .then((t) => {
+        setTemplate(t);
+        void cacheTemplate(t); // 오프라인 재사용 대비
+      })
+      .catch(async () => {
+        // 오프라인: 캐시된 템플릿으로 점검 진행
+        const cached = await getCachedTemplate(templateId!);
+        if (cached) setTemplate(cached);
+        else setError('템플릿을 불러올 수 없습니다 (오프라인이며 캐시 없음).');
+      })
       .finally(() => setLoading(false));
   }, [templateId]);
 
@@ -63,26 +74,40 @@ export default function InspectionForm() {
     setError('');
     try {
       const inspectionId = crypto.randomUUID();
-      await inspectionsApi.save({
+      // 오프라인 우선: 먼저 로컬(IndexedDB) 대기열에 저장 → WiFi 불안정해도 안전
+      const media = Object.entries(mediaByField).flatMap(([fieldId, items]) =>
+        items.map((m) => ({
+          id: m.id,
+          fieldId,
+          type: m.type,
+          blob: m.file,
+          filename: m.file.name || `${m.type}-${m.id}`,
+          uploaded: false,
+        })),
+      );
+      await enqueueInspection({
         id: inspectionId,
-        templateId: template.id,
-        templateVersion: template.version,
-        inspector,
-        answers,
-        createdAt: new Date().toISOString(),
+        payload: {
+          id: inspectionId,
+          templateId: template.id,
+          templateVersion: template.version,
+          inspector,
+          answers,
+          createdAt: new Date().toISOString(),
+        },
+        media,
+        status: 'pending',
+        savedAt: new Date().toISOString(),
+        inspectionSaved: false,
       });
-      // 미디어는 텍스트 결과 저장 후 별도 업로드
-      for (const [fieldId, items] of Object.entries(mediaByField)) {
-        for (const m of items) {
-          await inspectionsApi.uploadMedia(inspectionId, {
-            mediaId: m.id,
-            fieldId,
-            type: m.type,
-            file: m.file,
-          });
-        }
-      }
-      alert('점검 결과가 저장되었습니다.');
+      await refreshPendingCount();
+      void syncPending(); // 온라인이면 즉시 전송 시도, 아니면 대기
+
+      alert(
+        navigator.onLine
+          ? '점검 결과가 저장되었습니다. 서버로 전송 중입니다.'
+          : '오프라인 상태입니다. 점검 결과는 기기에 저장되었고, 연결되면 자동 전송됩니다.',
+      );
       navigate('/');
     } catch (e) {
       setError((e as Error).message);
