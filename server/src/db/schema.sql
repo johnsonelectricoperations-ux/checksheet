@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS inspections (
   template_version INTEGER NOT NULL,
   inspector        TEXT NOT NULL DEFAULT '',
   answers_json     TEXT NOT NULL DEFAULT '{}',-- { fieldId: value }
+  -- 결과 무결성: 점검 시점의 템플릿 항목 정의 스냅샷 { title, version, fields }
+  template_snapshot_json TEXT NOT NULL DEFAULT '{}',
   created_at       TEXT NOT NULL,             -- 태블릿 작성 시각
   received_at      TEXT NOT NULL,             -- 서버 수신 시각
   sync_status      TEXT NOT NULL DEFAULT 'completed',

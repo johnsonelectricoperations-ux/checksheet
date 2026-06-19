@@ -16,10 +16,13 @@ export default function ResultDetail() {
       .get(id!)
       .then(async (ins) => {
         setInspection(ins);
-        try {
-          setTemplate(await templatesApi.get(ins.templateId));
-        } catch {
-          /* 템플릿이 삭제됐을 수 있음 → 라벨 없이 표시 */
+        // 스냅샷이 있으면 템플릿 조회 불필요 (점검 시점 항목 정의 사용)
+        if (!ins.templateSnapshot?.fields?.length) {
+          try {
+            setTemplate(await templatesApi.get(ins.templateId));
+          } catch {
+            /* 템플릿이 삭제됐을 수 있음 → 라벨 없이 표시 */
+          }
         }
       })
       .catch((e) => setError((e as Error).message))
@@ -29,14 +32,16 @@ export default function ResultDetail() {
   if (loading) return <div className="page">불러오는 중…</div>;
   if (!inspection) return <div className="page error">{error || '결과를 찾을 수 없습니다.'}</div>;
 
-  // 라벨 표시는 현재 템플릿 기준. 템플릿이 수정되었으면 일부 라벨이 다를 수 있음.
-  const fields: Field[] = template?.fields ?? [];
+  // 점검 시점 스냅샷 우선 → 템플릿이 수정되어도 결과 라벨이 정확.
+  const snapshot = inspection.templateSnapshot;
+  const fields: Field[] = snapshot?.fields?.length ? snapshot.fields : (template?.fields ?? []);
+  const title = snapshot?.title ?? template?.title ?? '점검 결과';
   const mediaByField = groupMedia(inspection);
 
   return (
     <div className="page">
       <div className="page__bar">
-        <h2>{template?.title ?? '점검 결과'}</h2>
+        <h2>{title}</h2>
         <button className="btn" onClick={() => navigate('/results')}>
           목록
         </button>

@@ -57,6 +57,13 @@ export interface MediaFile {
   createdAt: string;
 }
 
+// 점검 시점의 템플릿 항목 스냅샷 (결과 무결성)
+export interface TemplateSnapshot {
+  title?: string;
+  version?: number;
+  fields?: Field[];
+}
+
 // 점검 결과
 export interface Inspection {
   id: string; // 태블릿에서 생성한 UUID (중복 동기화 방지)
@@ -64,6 +71,7 @@ export interface Inspection {
   templateVersion: number;
   inspector: string;
   answers: Record<string, unknown>; // { fieldId: value }
+  templateSnapshot?: TemplateSnapshot; // 점검 시점 항목 정의
   createdAt: string; // 태블릿 작성 시각
   receivedAt: string; // 서버 수신 시각
   syncStatus: string;

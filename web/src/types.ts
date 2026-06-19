@@ -80,12 +80,19 @@ export interface MediaFile {
   createdAt: string;
 }
 
+export interface TemplateSnapshot {
+  title?: string;
+  version?: number;
+  fields?: Field[];
+}
+
 export interface Inspection {
   id: string;
   templateId: string;
   templateVersion: number;
   inspector: string;
   answers: Record<string, unknown>;
+  templateSnapshot?: TemplateSnapshot;
   createdAt: string;
   receivedAt: string;
   syncStatus: string;
@@ -98,5 +105,6 @@ export interface InspectionInput {
   templateVersion: number;
   inspector?: string;
   answers?: Record<string, unknown>;
+  templateSnapshot?: TemplateSnapshot;
   createdAt?: string;
 }

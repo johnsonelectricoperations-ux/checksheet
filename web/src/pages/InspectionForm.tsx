@@ -95,6 +95,12 @@ export default function InspectionForm({ inspectorName = '' }: { inspectorName?:
           templateVersion: template.version,
           inspector,
           answers,
+          // 점검 시점의 항목 정의를 함께 저장 → 이후 템플릿 수정과 무관하게 결과 정확
+          templateSnapshot: {
+            title: template.title,
+            version: template.version,
+            fields: template.fields,
+          },
           createdAt: new Date().toISOString(),
         },
         media,

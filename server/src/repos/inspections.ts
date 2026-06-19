@@ -1,6 +1,6 @@
 // 점검 결과 저장소
 import { db } from '../db/index.js';
-import type { Inspection, MediaFile } from '../types.js';
+import type { Inspection, MediaFile, TemplateSnapshot } from '../types.js';
 
 interface InspectionRow {
   id: string;
@@ -8,6 +8,7 @@ interface InspectionRow {
   template_version: number;
   inspector: string;
   answers_json: string;
+  template_snapshot_json: string;
   created_at: string;
   received_at: string;
   sync_status: string;
@@ -33,6 +34,7 @@ function rowToInspection(row: InspectionRow, media: MediaFile[]): Inspection {
     templateVersion: row.template_version,
     inspector: row.inspector,
     answers: JSON.parse(row.answers_json),
+    templateSnapshot: JSON.parse(row.template_snapshot_json || '{}') as TemplateSnapshot,
     createdAt: row.created_at,
     receivedAt: row.received_at,
     syncStatus: row.sync_status,
@@ -67,6 +69,7 @@ export interface InspectionInput {
   templateVersion: number;
   inspector?: string;
   answers?: Record<string, unknown>;
+  templateSnapshot?: TemplateSnapshot;
   createdAt?: string;
 }
 
@@ -93,13 +96,14 @@ export function saveInspection(input: InspectionInput): Inspection {
   const now = new Date().toISOString();
   const createdAt = input.createdAt ?? now;
   db.prepare(
-    `INSERT INTO inspections (id, template_id, template_version, inspector, answers_json, created_at, received_at, sync_status)
-     VALUES (@id, @templateId, @templateVersion, @inspector, @answers, @createdAt, @receivedAt, 'completed')
+    `INSERT INTO inspections (id, template_id, template_version, inspector, answers_json, template_snapshot_json, created_at, received_at, sync_status)
+     VALUES (@id, @templateId, @templateVersion, @inspector, @answers, @snapshot, @createdAt, @receivedAt, 'completed')
      ON CONFLICT(id) DO UPDATE SET
        template_id = excluded.template_id,
        template_version = excluded.template_version,
        inspector = excluded.inspector,
        answers_json = excluded.answers_json,
+       template_snapshot_json = excluded.template_snapshot_json,
        received_at = excluded.received_at`,
   ).run({
     id: input.id,
@@ -107,6 +111,7 @@ export function saveInspection(input: InspectionInput): Inspection {
     templateVersion: input.templateVersion,
     inspector: input.inspector ?? '',
     answers: JSON.stringify(input.answers ?? {}),
+    snapshot: JSON.stringify(input.templateSnapshot ?? {}),
     createdAt,
     receivedAt: now,
   });

@@ -29,15 +29,23 @@ router.post('/', (req, res) => {
   if (!b.id || !b.templateId) {
     return res.status(400).json({ error: 'id 와 templateId 는 필수입니다.' });
   }
-  if (!getTemplate(b.templateId)) {
+  const template = getTemplate(b.templateId);
+  if (!template) {
     return res.status(400).json({ error: '존재하지 않는 템플릿입니다.' });
   }
+  // 클라이언트가 점검 시점 스냅샷을 보냈으면 그대로 보관(작업자가 본 그대로),
+  // 없으면 현재 템플릿으로 스냅샷을 만든다.
+  const snapshot =
+    b.templateSnapshot && b.templateSnapshot.fields
+      ? b.templateSnapshot
+      : { title: template.title, version: template.version, fields: template.fields };
   const saved = saveInspection({
     id: b.id,
     templateId: b.templateId,
     templateVersion: Number(b.templateVersion ?? 1),
     inspector: b.inspector,
     answers: b.answers,
+    templateSnapshot: snapshot,
     createdAt: b.createdAt,
   });
   res.status(201).json(saved);
