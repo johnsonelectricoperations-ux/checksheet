@@ -60,3 +60,36 @@ export interface TemplateInput {
   fields?: Field[];
   recipients?: string[];
 }
+
+export interface MediaFile {
+  id: string;
+  inspectionId: string;
+  fieldId: string;
+  type: 'photo' | 'video';
+  mime: string;
+  size: number;
+  filename: string;
+  capturedAt?: string;
+  createdAt: string;
+}
+
+export interface Inspection {
+  id: string;
+  templateId: string;
+  templateVersion: number;
+  inspector: string;
+  answers: Record<string, unknown>;
+  createdAt: string;
+  receivedAt: string;
+  syncStatus: string;
+  media?: MediaFile[];
+}
+
+export interface InspectionInput {
+  id: string;
+  templateId: string;
+  templateVersion: number;
+  inspector?: string;
+  answers?: Record<string, unknown>;
+  createdAt?: string;
+}

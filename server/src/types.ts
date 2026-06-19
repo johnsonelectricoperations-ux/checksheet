@@ -36,6 +36,32 @@ export interface Field {
   media?: MediaOptions; // photo/video 용 옵션
 }
 
+// 점검 결과의 미디어 파일 메타데이터
+export interface MediaFile {
+  id: string;
+  inspectionId: string;
+  fieldId: string;
+  type: 'photo' | 'video';
+  mime: string;
+  size: number;
+  filename: string;
+  capturedAt?: string;
+  createdAt: string;
+}
+
+// 점검 결과
+export interface Inspection {
+  id: string; // 태블릿에서 생성한 UUID (중복 동기화 방지)
+  templateId: string;
+  templateVersion: number;
+  inspector: string;
+  answers: Record<string, unknown>; // { fieldId: value }
+  createdAt: string; // 태블릿 작성 시각
+  receivedAt: string; // 서버 수신 시각
+  syncStatus: string;
+  media?: MediaFile[];
+}
+
 // 점검시트 템플릿
 export interface Template {
   id: string;

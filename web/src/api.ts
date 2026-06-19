@@ -1,4 +1,4 @@
-import type { Template, TemplateInput } from './types.js';
+import type { Inspection, InspectionInput, MediaFile, Template, TemplateInput } from './types.js';
 
 const BASE = '/api';
 
@@ -29,4 +29,32 @@ export const templatesApi = {
       method: 'PATCH',
       body: JSON.stringify({ active }),
     }),
+};
+
+export const inspectionsApi = {
+  list: (templateId?: string) =>
+    request<Inspection[]>(`/inspections${templateId ? `?templateId=${templateId}` : ''}`),
+  get: (id: string) => request<Inspection>(`/inspections/${id}`),
+  save: (input: InspectionInput) =>
+    request<Inspection>('/inspections', { method: 'POST', body: JSON.stringify(input) }),
+  // 미디어는 multipart 로 별도 업로드 (텍스트 결과와 분리)
+  uploadMedia: async (
+    inspectionId: string,
+    params: { mediaId: string; fieldId: string; type: 'photo' | 'video'; file: File },
+  ): Promise<MediaFile> => {
+    const form = new FormData();
+    form.append('mediaId', params.mediaId);
+    form.append('fieldId', params.fieldId);
+    form.append('type', params.type);
+    form.append('file', params.file);
+    const res = await fetch(`${BASE}/inspections/${inspectionId}/media`, {
+      method: 'POST',
+      body: form,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? `미디어 업로드 실패 (${res.status})`);
+    }
+    return res.json() as Promise<MediaFile>;
+  },
 };

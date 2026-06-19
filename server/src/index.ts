@@ -22,9 +22,11 @@ app.get('/api/health', (_req, res) => {
 
 // 라우트
 import templates from './routes/templates.js';
+import inspections from './routes/inspections.js';
+import media from './routes/media.js';
 app.use('/api/templates', templates);
-// import inspections from './routes/inspections.js'; // 2단계
-// app.use('/api/inspections', inspections);
+app.use('/api/inspections', inspections);
+app.use('/api/media', media);
 
 app.listen(config.port, () => {
   console.log(`[server] http://localhost:${config.port} 에서 실행 중`);

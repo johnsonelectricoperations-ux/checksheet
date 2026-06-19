@@ -76,6 +76,11 @@ export default function TemplateList() {
               {t.description && <div className="card__desc">{t.description}</div>}
             </div>
             <div className="card__actions">
+              {t.active && (
+                <button className="btn btn--primary" onClick={() => navigate(`/inspect/${t.id}`)}>
+                  점검 시작
+                </button>
+              )}
               <button className="btn" onClick={() => onDuplicate(t.id)}>
                 복제
               </button>

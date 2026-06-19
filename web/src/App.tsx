@@ -2,6 +2,7 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import { useOnlineStatus } from './hooks/useOnlineStatus.js';
 import TemplateList from './pages/TemplateList.js';
 import TemplateEditor from './pages/TemplateEditor.js';
+import InspectionForm from './pages/InspectionForm.js';
 
 export default function App() {
   const online = useOnlineStatus();
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/" element={<TemplateList />} />
             <Route path="/templates/new" element={<TemplateEditor />} />
             <Route path="/templates/:id" element={<TemplateEditor />} />
+            <Route path="/inspect/:templateId" element={<InspectionForm />} />
           </Routes>
         </main>
       </div>
