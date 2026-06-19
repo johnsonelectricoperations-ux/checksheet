@@ -111,6 +111,28 @@ body {
   font-size: 16px;
   font-weight: 500;
 }
+
+/* 인쇄 / PDF 저장 */
+@media print {
+  .app__header,
+  .no-print,
+  .filters {
+    display: none !important;
+  }
+  .app__main {
+    max-width: none;
+    padding: 0;
+  }
+  .inspect-field,
+  .result-meta {
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+  .media__thumb {
+    width: 150px;
+    height: 150px;
+  }
+}
 .status {
   font-size: 14px;
   padding: 4px 10px;

@@ -42,9 +42,14 @@ export default function ResultDetail() {
     <div className="page">
       <div className="page__bar">
         <h2>{title}</h2>
-        <button className="btn" onClick={() => navigate('/results')}>
-          목록
-        </button>
+        <div className="no-print">
+          <button className="btn" onClick={() => window.print()}>
+            인쇄/PDF
+          </button>
+          <button className="btn" onClick={() => navigate('/results')}>
+            목록
+          </button>
+        </div>
       </div>
 
       <div className="result-meta">

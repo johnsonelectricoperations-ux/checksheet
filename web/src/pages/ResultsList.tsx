@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { inspectionsApi, templatesApi } from '../api.js';
-import type { Inspection, Template } from '../types.js';
+import { downloadCsv } from '../utils/csv.js';
+import type { Field, Inspection, Template } from '../types.js';
+
+// 한 셀 값: 미디어 항목은 첨부 개수, 그 외는 입력값
+function cellFor(ins: Inspection, f: Field): string {
+  if (f.type === 'photo' || f.type === 'video') {
+    const n = (ins.media ?? []).filter((m) => m.fieldId === f.id).length;
+    return n > 0 ? `첨부 ${n}` : '';
+  }
+  const v = ins.answers[f.id];
+  return v == null ? '' : String(v);
+}
 
 export default function ResultsList() {
   const [inspections, setInspections] = useState<Inspection[]>([]);
@@ -38,10 +49,43 @@ export default function ResultsList() {
     });
   }, [inspections, templateId, query, titleById]);
 
+  function exportCsv() {
+    const selected = templates.find((t) => t.id === templateId);
+    const rows: (string | number)[][] = [];
+    if (selected) {
+      // 특정 시트: 항목 라벨을 열로
+      const fields = selected.fields;
+      rows.push(['작성일시', '점검자', ...fields.map((f) => f.label)]);
+      for (const ins of filtered) {
+        rows.push([
+          new Date(ins.createdAt).toLocaleString('ko-KR'),
+          ins.inspector,
+          ...fields.map((f) => cellFor(ins, f)),
+        ]);
+      }
+    } else {
+      // 전체: 기본 열
+      rows.push(['점검시트', '작성일시', '점검자', '첨부수']);
+      for (const ins of filtered) {
+        rows.push([
+          titleById[ins.templateId] ?? '(삭제됨)',
+          new Date(ins.createdAt).toLocaleString('ko-KR'),
+          ins.inspector,
+          ins.media?.length ?? 0,
+        ]);
+      }
+    }
+    const name = `점검결과_${selected ? selected.title + '_' : ''}${new Date().toISOString().slice(0, 10)}.csv`;
+    downloadCsv(name, rows);
+  }
+
   return (
     <div className="page">
       <div className="page__bar">
         <h2>점검 결과</h2>
+        <button className="btn" onClick={exportCsv} disabled={filtered.length === 0}>
+          CSV 내보내기
+        </button>
       </div>
 
       <div className="filters">
