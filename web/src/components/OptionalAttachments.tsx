@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { compressImage } from '../utils/compressImage.js';
 import type { LocalMedia } from './MediaCapture.js';
 
 interface Props {
@@ -13,13 +14,13 @@ export default function OptionalAttachments({ items, onChange }: Props) {
   const photoRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLInputElement>(null);
 
-  function add(files: FileList | null, type: 'photo' | 'video') {
-    const added: LocalMedia[] = Array.from(files ?? []).map((file) => ({
-      id: crypto.randomUUID(),
-      file,
-      url: URL.createObjectURL(file),
-      type,
-    }));
+  async function add(files: FileList | null, type: 'photo' | 'video') {
+    const added: LocalMedia[] = await Promise.all(
+      Array.from(files ?? []).map(async (raw) => {
+        const file = type === 'photo' ? await compressImage(raw) : raw;
+        return { id: crypto.randomUUID(), file, url: URL.createObjectURL(file), type };
+      }),
+    );
     onChange([...items, ...added]);
   }
 

@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { compressImage } from '../utils/compressImage.js';
 import type { Field } from '../types.js';
 
 // 촬영/선택된 미디어 1건 (업로드 전 로컬 상태)
@@ -22,18 +23,24 @@ export default function MediaCapture({ field, items, onChange }: Props) {
   const isVideo = field.type === 'video';
   const maxCount = field.media?.maxCount;
 
-  function onSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
-    const added: LocalMedia[] = files.map((file) => ({
-      id: crypto.randomUUID(),
-      file,
-      url: URL.createObjectURL(file),
-      type: isVideo ? 'video' : 'photo',
-    }));
+    e.target.value = ''; // 같은 파일 재촬영 허용
+    // 사진은 업로드 전 압축 (동영상은 그대로)
+    const added: LocalMedia[] = await Promise.all(
+      files.map(async (raw) => {
+        const file = isVideo ? raw : await compressImage(raw);
+        return {
+          id: crypto.randomUUID(),
+          file,
+          url: URL.createObjectURL(file),
+          type: isVideo ? ('video' as const) : ('photo' as const),
+        };
+      }),
+    );
     let next = [...items, ...added];
     if (maxCount && next.length > maxCount) next = next.slice(0, maxCount);
     onChange(next);
-    e.target.value = ''; // 같은 파일 재촬영 허용
   }
 
   function remove(id: string) {

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { filesApi } from '../api.js';
+import { compressImage } from '../utils/compressImage.js';
 import type { GuideMedia } from '../types.js';
 
 interface Props {
@@ -22,7 +23,8 @@ export default function GuideMediaEditor({ items, onChange }: Props) {
     setError('');
     try {
       const uploaded: GuideMedia[] = [];
-      for (const f of list) {
+      for (const raw of list) {
+        const f = type === 'photo' ? await compressImage(raw) : raw;
         const r = await filesApi.upload(f, type, f.name);
         uploaded.push({ id: r.id, type: r.type });
       }
