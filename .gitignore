@@ -8,3 +8,6 @@ build/
 server/data/
 .env
 .env.local
+
+# TLS 인증서 (각 사내 서버에서 생성, 커밋 금지)
+certs/

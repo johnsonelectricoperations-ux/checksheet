@@ -63,13 +63,35 @@ npm run dev       # http://localhost:5173 (사내망의 태블릿에서도 접�
 
 ## 사내 PC 배포 (Docker)
 
+### 1. HTTPS 인증서 생성 (필수)
+
+> ⚠️ **오프라인 기능(PWA 서비스워커)은 `localhost` 외에는 HTTPS 에서만 동작**합니다.
+> 사내 IP 로 접속하려면 반드시 HTTPS 를 구성하세요.
+
+```bash
+./scripts/generate-cert.sh <서버IP>   # 예: ./scripts/generate-cert.sh 192.168.0.50
+```
+
+`certs/server.crt`, `certs/server.key` 가 생성됩니다.
+
+### 2. 실행
+
 ```bash
 docker compose up -d --build
 ```
 
-- 웹: `http://<서버IP>:8080`
-- API: `http://<서버IP>:5008`
+- 웹(HTTPS): `https://<서버IP>:8443`  ← 태블릿은 이 주소로 접속
+- HTTP(`:8080`) 접속은 자동으로 HTTPS 로 리다이렉트
+- API: 같은 출처의 `/api` 로 프록시 (별도 포트 노출 불필요, 내부 5008)
 - DB와 미디어 파일은 `checksheet-data` 볼륨에 영구 보관
+
+### 3. 태블릿에서 인증서 신뢰 (경고 제거)
+
+자체 서명 인증서이므로 처음엔 브라우저 경고가 뜹니다.
+`certs/server.crt` 를 각 태블릿/PC 에 "신뢰된 인증서"로 설치하면 경고 없이 사용할 수 있습니다.
+(안드로이드: 설정 → 보안 → 인증서 설치)
+
+> 개발 환경에서는 `localhost` 가 보안 컨텍스트로 취급되어 HTTPS 없이도 서비스워커가 동작합니다.
 
 ---
 

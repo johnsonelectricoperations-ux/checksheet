@@ -3,8 +3,9 @@
 services:
   server:
     build: ./server
-    ports:
-      - "5008:5008"
+    # 외부로 포트를 노출하지 않고 nginx(HTTPS) 를 통해서만 접근 → 평문 HTTP API 차단
+    expose:
+      - "5008"
     environment:
       - PORT=5008
       - DATA_DIR=/data
@@ -15,7 +16,10 @@ services:
   web:
     build: ./web
     ports:
-      - "8080:80"
+      - "8080:80"    # HTTP → HTTPS 리다이렉트
+      - "8443:443"   # HTTPS (서비스워커/오프라인 동작에 필요)
+    volumes:
+      - ./certs:/etc/nginx/certs:ro   # generate-cert.sh 로 만든 인증서
     depends_on:
       - server
     restart: unless-stopped
