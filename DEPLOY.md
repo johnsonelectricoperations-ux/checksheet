@@ -48,11 +48,20 @@
 - 백업은 이 **`server\data` 폴더를 통째로 복사**하면 됩니다. (정기적으로 다른 매체에 보관)
 
 ### 오프라인 기능을 쓰려면 (HTTPS)
-HTTP(위 기본) 로는 "탭을 닫았다 오프라인에서 다시 열기" 가 안 됩니다(서비스워커 제약).
-현장 오프라인까지 쓰려면 HTTPS 가 필요합니다:
-1. 인증서 `certs\server.crt`, `certs\server.key` 준비 (openssl 또는 Windows 인증서 도구)
-2. `start-node.bat` 의 `TLS_CERT_FILE` / `TLS_KEY_FILE` 두 줄 앞의 `REM` 을 지워 활성화
-3. 다시 실행 → `https://<서버IP>:5008`
+HTTP 로는 "탭을 닫았다 오프라인에서 다시 열기" 가 안 됩니다(서비스워커 제약).
+현장 오프라인까지 쓰려면 HTTPS 가 필요합니다. **도커/openssl 없이** 아래 두 번이면 끝납니다:
+
+1. **`make-cert.bat`** 더블클릭 → 서버 IP 입력 (예: `10.80.101.200`)
+   → `certs\server.crt`, `certs\server.key` 가 자동 생성됩니다.
+2. **`start-node.bat`** 다시 실행 → 인증서가 있으면 자동으로 HTTPS 로 뜹니다.
+3. 접속: `https://<서버IP>:5008`
+
+> - 인증서가 없으면 자동으로 HTTP 로 동작하므로, HTTP 로 먼저 써보다가 나중에
+>   `make-cert.bat` 만 추가로 돌리면 HTTPS 로 전환됩니다.
+> - 자체 서명 인증서라 처음엔 브라우저 보안 경고가 납니다 → "고급 → 계속" 으로 진입,
+>   경고를 없애려면 `certs\server.crt` 를 태블릿에 신뢰된 인증서로 설치하세요.
+> - IP 가 바뀌면 그 IP 로 `make-cert.bat` 을 다시 돌리면 됩니다.
+>   (자세한 내용은 아래 [IP 가 바뀌는 경우] 참고 — 고정 IP 권장)
 
 > 참고: `better-sqlite3` 설치가 실패하면 대개 GitHub 접속 문제입니다. 인터넷이 되는지
 > 확인하고 `setup-node.bat` 을 다시 실행하세요.
