@@ -1,7 +1,8 @@
 @echo off
+chcp 65001 >nul
 REM 도커 없이 Node.js 로 실행 (서버 하나가 웹+API 모두 제공)
 REM 먼저 setup-node.bat 을 1회 실행해 두어야 합니다.
-cd /d "%~dp0\server"
+cd /d "%~dp0server"
 
 REM 데이터는 server\data 폴더에 저장됩니다.
 set PORT=5008

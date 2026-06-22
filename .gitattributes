@@ -1,0 +1,9 @@
+# 기본: 텍스트 자동 정규화
+* text=auto
+
+# Windows 배치 파일은 반드시 CRLF + (한글 표시를 위해 UTF-8 그대로) 유지
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 셸 스크립트는 LF
+*.sh text eol=lf

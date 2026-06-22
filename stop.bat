@@ -1,5 +1,6 @@
 @echo off
-REM 점검시트 시스템 중지 - 더블클릭 실행
+chcp 65001 >nul
+REM 점검시트 시스템 중지 (Docker) - 더블클릭 실행
 cd /d "%~dp0"
 
 echo 점검시트 시스템을 중지합니다...

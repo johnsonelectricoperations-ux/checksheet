@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 REM HTTPS 인증서 만들기 (도커/openssl 불필요) - 더블클릭 실행
 REM 먼저 setup-node.bat 을 1회 실행해 두어야 합니다(라이브러리 설치).
 cd /d "%~dp0"
@@ -14,7 +15,7 @@ if "%IP%"=="" (
   exit /b 1
 )
 
-node server\gen-cert.mjs %IP%
+node "%~dp0server\gen-cert.mjs" %IP%
 if errorlevel 1 (
   echo.
   echo [오류] 생성 실패. setup-node.bat 을 먼저 실행했는지 확인하세요.
