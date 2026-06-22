@@ -4,6 +4,7 @@ import { templatesApi } from '../api.js';
 import MediaCapture, { type LocalMedia } from '../components/MediaCapture.js';
 import OptionalAttachments from '../components/OptionalAttachments.js';
 import GuideView from '../components/GuideView.js';
+import { uuid } from '../utils/uuid.js';
 import { cacheTemplate, getCachedTemplate } from '../offline/store.js';
 import { enqueueInspection } from '../offline/store.js';
 import { refreshPendingCount, syncPending } from '../offline/sync.js';
@@ -75,7 +76,7 @@ export default function InspectionForm({ inspectorName = '' }: { inspectorName?:
     setSubmitting(true);
     setError('');
     try {
-      const inspectionId = crypto.randomUUID();
+      const inspectionId = uuid();
       // 오프라인 우선: 먼저 로컬(IndexedDB) 대기열에 저장 → WiFi 불안정해도 안전
       const media = Object.entries(mediaByField).flatMap(([fieldId, items]) =>
         items.map((m) => ({

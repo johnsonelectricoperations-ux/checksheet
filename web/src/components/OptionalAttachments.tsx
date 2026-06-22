@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { compressImage } from '../utils/compressImage.js';
+import { uuid } from '../utils/uuid.js';
 import type { LocalMedia } from './MediaCapture.js';
 
 interface Props {
@@ -18,7 +19,7 @@ export default function OptionalAttachments({ items, onChange }: Props) {
     const added: LocalMedia[] = await Promise.all(
       Array.from(files ?? []).map(async (raw) => {
         const file = type === 'photo' ? await compressImage(raw) : raw;
-        return { id: crypto.randomUUID(), file, url: URL.createObjectURL(file), type };
+        return { id: uuid(), file, url: URL.createObjectURL(file), type };
       }),
     );
     onChange([...items, ...added]);

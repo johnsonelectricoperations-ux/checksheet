@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { compressImage } from '../utils/compressImage.js';
 import { getVideoDuration } from '../utils/videoDuration.js';
+import { uuid } from '../utils/uuid.js';
 import type { Field } from '../types.js';
 
 // 촬영/선택된 미디어 1건 (업로드 전 로컬 상태)
@@ -42,10 +43,10 @@ export default function MediaCapture({ field, items, onChange }: Props) {
             continue;
           }
         }
-        added.push({ id: crypto.randomUUID(), file: raw, url: URL.createObjectURL(raw), type: 'video' });
+        added.push({ id: uuid(), file: raw, url: URL.createObjectURL(raw), type: 'video' });
       } else {
         const file = await compressImage(raw); // 사진은 업로드 전 압축
-        added.push({ id: crypto.randomUUID(), file, url: URL.createObjectURL(file), type: 'photo' });
+        added.push({ id: uuid(), file, url: URL.createObjectURL(file), type: 'photo' });
       }
     }
 

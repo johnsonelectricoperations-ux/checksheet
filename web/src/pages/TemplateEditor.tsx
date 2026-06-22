@@ -3,11 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { templatesApi } from '../api.js';
 import RecipientsEditor from '../components/RecipientsEditor.js';
 import GuideMediaEditor from '../components/GuideMediaEditor.js';
+import { uuid } from '../utils/uuid.js';
 import { FIELD_TYPE_LABELS, type Field, type FieldType } from '../types.js';
 
 function newField(order: number): Field {
   return {
-    id: crypto.randomUUID(),
+    id: uuid(),
     type: 'check',
     label: '',
     required: false,
