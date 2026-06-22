@@ -20,7 +20,9 @@
 안(`node_modules`)에만** 설치되어 PC 를 더럽히지 않습니다.
 
 ### 1) Node.js 설치
-- <https://nodejs.org> 에서 **LTS(22.x)** 설치 (다음다음 설치)
+- <https://nodejs.org> 에서 **"22 LTS"** 설치 (다음다음 설치)
+  - ⚠️ 오른쪽 **"Current"(24)** 를 받으면 안 됩니다. 24 는 DB 라이브러리 설치 시
+    컴파일 도구(Visual Studio)가 필요해 실패합니다. 반드시 **22 LTS**.
 - 설치 후 확인(명령 프롬프트):
   ```cmd
   node -v

@@ -74,7 +74,7 @@ npm run dev       # http://localhost:5173 (사내망의 태블릿에서도 접�
 
 ### 방식 A — Node.js (도커 없이, Windows)
 
-1. [Node.js LTS(22)](https://nodejs.org) 설치
+1. [Node.js](https://nodejs.org) 설치 — ⚠️ 반드시 **"22 LTS"** (오른쪽 "Current"(24)는 컴파일 도구가 필요해 실패함)
 2. **`setup-node.bat`** 더블클릭 (1회, 인터넷 연결 상태 — 설치+빌드)
 3. **`start-node.bat`** 더블클릭 (실행)
 4. 접속: `http://<서버IP>:5008`  (데이터는 `server/data` 폴더에 저장)
