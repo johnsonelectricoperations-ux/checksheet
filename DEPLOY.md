@@ -49,12 +49,43 @@
 
 ### 1단계 — 인터넷 되는 PC에서 (준비)
 
-1. 저장소 전체를 받습니다.
-2. 이미지 빌드 + 묶기:
-   ```bash
-   ./scripts/save-images.sh
-   ```
-   → `dist-images/checksheet-images.tar.gz` 생성 (서버로 옮길 파일)
+#### (1) 필요한 프로그램 설치
+
+- **Docker Desktop** — <https://www.docker.com/products/docker-desktop> 에서 받아 설치 후 실행
+- **Git** (선택) — <https://git-scm.com> 에서 설치 *(ZIP 으로 받으면 Git 없이도 가능)*
+
+#### (2) GitHub 에서 파일 받기
+
+> ⚠️ 작업한 코드는 **`claude/epic-brown-v38qr4`** 브랜치에 있습니다. 반드시 이 브랜치를 받으세요.
+
+**방법 A — Git 사용 (권장)**
+```bash
+git clone https://github.com/johnsonelectricoperations-ux/checksheet.git
+cd checksheet
+git checkout claude/epic-brown-v38qr4
+```
+
+**방법 B — ZIP 다운로드 (Git 없이)**
+1. 브라우저에서 GitHub 저장소 접속
+2. 브랜치를 **`claude/epic-brown-v38qr4`** 로 변경
+3. 초록색 `Code` 버튼 → `Download ZIP`
+4. 압축을 풀고 그 폴더로 이동
+
+#### (3) 이미지 빌드 + 묶기
+
+폴더 안에서 실행 (Docker 가 실행 중이어야 함):
+```bash
+./scripts/save-images.sh
+```
+- 인터넷에서 필요한 라이브러리·베이스 이미지를 받아 **컨테이너 이미지 안에 모두 담습니다.**
+- 완료되면 **`dist-images/checksheet-images.tar.gz`** 가 생성됩니다 (서버로 옮길 핵심 파일).
+
+> Windows 에서 `./scripts/save-images.sh` 가 실행되지 않으면 **Git Bash** 로 실행하거나,
+> 스크립트 안의 명령 두 줄을 직접 실행하세요:
+> ```bash
+> docker compose build
+> docker save checksheet-server:latest checksheet-web:latest | gzip > dist-images/checksheet-images.tar.gz
+> ```
 
 ### 2단계 — 서버 PC로 복사할 파일
 
