@@ -21,8 +21,8 @@ docker compose -f docker-compose.http.yml ps
 echo.
 echo ============================================
 echo  접속 주소:
-echo    이 PC      : http://localhost:8080
-echo    태블릿/다른PC: http://10.80.101.200:8080
+echo    이 PC      : http://localhost:5008
+echo    태블릿/다른PC: http://10.80.101.200:5008
 echo  로그인: admin / admin123
 echo ============================================
 pause

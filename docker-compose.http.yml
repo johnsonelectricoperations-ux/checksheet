@@ -1,6 +1,6 @@
 # HTTP 전용 (인증서 없이 빠르게 테스트) - 오프라인(서비스워커)은 동작하지 않음
 # 사용: docker compose -f docker-compose.http.yml up -d --build
-# 접속: http://<서버IP>:8080
+# 접속: http://<서버IP>:5008
 services:
   server:
     build: ./server
@@ -18,7 +18,7 @@ services:
     build: ./web
     image: checksheet-web:latest
     ports:
-      - "8080:80"
+      - "5008:80"
     volumes:
       # 빌드된 이미지의 nginx 설정을 HTTP 전용으로 덮어쓰기
       - ./web/nginx.http.conf:/etc/nginx/conf.d/default.conf:ro
