@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 
 const args = process.argv.slice(2);
 if (args.length === 0) {
-  console.error('사용법: node server/gen-cert.mjs <서버IP> [추가IP/호스트명 ...]');
+  console.error('Usage: node server/gen-cert.mjs <server-ip> [more-ip/hostname ...]');
   process.exit(1);
 }
 
@@ -33,7 +33,7 @@ mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'server.crt'), pems.cert);
 writeFileSync(join(outDir, 'server.key'), pems.private);
 
-console.log('인증서 생성 완료:');
+console.log('Certificate created:');
 console.log('  ' + join(outDir, 'server.crt'));
 console.log('  ' + join(outDir, 'server.key'));
-console.log('대상 주소: ' + args.join(', ') + ', localhost, 127.0.0.1');
+console.log('For: ' + args.join(', ') + ', localhost, 127.0.0.1');

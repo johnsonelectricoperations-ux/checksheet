@@ -1,10 +1,9 @@
 @echo off
-chcp 65001 >nul
-REM 점검시트 시스템 중지 (Docker) - 더블클릭 실행
+REM Stop (Docker).
 cd /d "%~dp0"
 
-echo 점검시트 시스템을 중지합니다...
+echo Stopping Checksheet system...
 docker compose -f docker-compose.http.yml down
 echo.
-echo 중지되었습니다. (데이터는 그대로 보관됩니다)
+echo Stopped. (Data is kept.)
 pause
