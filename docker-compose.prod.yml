@@ -1,0 +1,28 @@
+# 오프라인(인터넷 차단) 서버 PC 전용 구성
+# - 빌드(build:) 없이 미리 만들어 전송한 이미지를 그대로 실행한다.
+# - 사용: docker compose -f docker-compose.prod.yml up -d
+services:
+  server:
+    image: checksheet-server:latest
+    expose:
+      - "5008"
+    environment:
+      - PORT=5008
+      - DATA_DIR=/data
+    volumes:
+      - checksheet-data:/data
+    restart: unless-stopped
+
+  web:
+    image: checksheet-web:latest
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  checksheet-data:

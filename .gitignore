@@ -14,3 +14,6 @@ certs/
 
 # 데이터 백업 파일
 backups/
+
+# 오프라인 전송용 도커 이미지 묶음
+dist-images/

@@ -6,7 +6,7 @@
 
 ## 현재 상태
 
-- **현재 단계**: 운영 전 보완 A~E,G,H,I 완료. F(실기기 테스트)만 사용자 직접 수행 대기
+- **현재 단계**: 보완 완료 + 배포 가이드 작성. F(실기기 테스트)만 사용자 직접 수행 대기
 - **브랜치**: `claude/epic-brown-v38qr4`
 - **최종 업데이트**: 2026-06-19
 
@@ -99,6 +99,16 @@
   - 헤더에 대기 건수/동기화중 표시, 탭하면 즉시 동기화
 - 검증: 웹 빌드/타입 통과. 서버측 idempotent 저장·분리 업로드 경로는 2단계 실측 완료
   (브라우저 IndexedDB 실측은 후속 통합 테스트 단계에서 보강 예정)
+
+### 2026-06-19 (배포 가이드)
+- 사내 서버 PC 배포 문서 DEPLOY.md 작성
+  - Docker = venv 같은 격리 환경(서버에 Node 등 설치 불필요) 설명
+  - 시나리오 A(인터넷됨): docker compose up -d --build
+  - 시나리오 B(오프라인 사내망): 인터넷PC에서 save-images.sh → 서버로 전송 →
+    load-images.sh → docker-compose.prod.yml 로 실행
+  - 이미지 이름 명시(checksheet-server/web), docker-compose.prod.yml(빌드 없음) 추가
+  - save-images.sh / load-images.sh 추가, 업데이트/운영 명령/Node 직접실행 부록
+- compose dev/prod config 검증 통과
 
 ### 2026-06-19 (보완 I: 데이터 백업)
 - Docker 볼륨(DB+미디어) 백업/복원 스크립트 + README 절차/cron 안내

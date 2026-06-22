@@ -63,6 +63,9 @@ npm run dev       # http://localhost:5173 (사내망의 태블릿에서도 접�
 
 ## 사내 PC 배포 (Docker)
 
+> 📘 **서버 PC 배포 전체 절차(인터넷 없는 사내망 포함)는 [`DEPLOY.md`](./DEPLOY.md) 참고.**
+> 아래는 인터넷 되는 환경에서의 간단 실행입니다.
+
 ### 1. HTTPS 인증서 생성 (필수)
 
 > ⚠️ **오프라인 기능(PWA 서비스워커)은 `localhost` 외에는 HTTPS 에서만 동작**합니다.
