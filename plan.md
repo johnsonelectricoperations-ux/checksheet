@@ -70,8 +70,9 @@
 | 로컬 저장 | IndexedDB | 오프라인 시 태블릿에 안전 보관 |
 | 오프라인 동기화 | Service Worker + 동기화 큐 | WiFi 복귀 감지 시 자동 전송 |
 | 백엔드 | Node.js + Express | 가볍고 사내 PC 운영 용이 |
-| 데이터베이스 | PostgreSQL (초기엔 SQLite도 가능) | 점검 이력 안정적 보관 |
-| 배포 | Docker Compose | 사내 PC 1대에 일괄 설치 |
+| 데이터베이스 | SQLite (better-sqlite3) | 단일 PC 운영에 가볍고 설정 불필요 |
+| 웹 제공 | Node 서버가 직접 정적 제공 (또는 nginx) | 도커 없이도 서버 하나로 웹+API |
+| 배포 | ① Node.js 직접 실행 ② Docker Compose | 도커 불가 환경(보안) 대응 / 도커 가능 시 |
 | 메일(후속) | Nodemailer → 사내 SMTP 릴레이 | 인터넷 없는 서버 대응 |
 | 미디어 촬영 | HTML `getUserMedia` / `<input capture>` + 카메라 | 태블릿 카메라로 사진·동영상 촬영 |
 | 미디어 로컬 저장 | IndexedDB(Blob 저장) | 오프라인에서 사진·동영상 보관 |

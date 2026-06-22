@@ -61,32 +61,40 @@ npm run dev       # http://localhost:5173 (사내망의 태블릿에서도 접�
 
 ---
 
-## 사내 PC 배포 (Docker)
+## 사내 PC 배포
 
-> 📘 **서버 PC 배포 전체 절차(인터넷 없는 사내망 포함)는 [`DEPLOY.md`](./DEPLOY.md) 참고.**
-> 아래는 인터넷 되는 환경에서의 간단 실행입니다.
+> 📘 **전체 절차(오프라인 사내망, IP 변경, HTTPS 등)는 [`DEPLOY.md`](./DEPLOY.md) 참고.**
 
-### 1. HTTPS 인증서 생성 (필수)
+회사 정책에 맞춰 두 방식 중 하나를 고릅니다.
 
-> ⚠️ **오프라인 기능(PWA 서비스워커)은 `localhost` 외에는 HTTPS 에서만 동작**합니다.
-> 사내 IP 로 접속하려면 반드시 HTTPS 를 구성하세요.
+| 방식 | 언제 | 접속 |
+|------|------|------|
+| **A. Node.js (도커 없이)** | **보안상 도커 설치 불가**할 때 | `http://<서버IP>:5008` |
+| **B. Docker** | 도커 설치가 가능할 때 | `https://<서버IP>:8443` |
+
+### 방식 A — Node.js (도커 없이, Windows)
+
+1. [Node.js LTS(22)](https://nodejs.org) 설치
+2. **`setup-node.bat`** 더블클릭 (1회, 인터넷 연결 상태 — 설치+빌드)
+3. **`start-node.bat`** 더블클릭 (실행)
+4. 접속: `http://<서버IP>:5008`  (데이터는 `server/data` 폴더에 저장)
+
+> Node 서버 하나가 웹 화면과 API 를 모두 제공합니다(nginx 불필요).
+> 오프라인 기능까지 쓰려면 HTTPS 가 필요합니다 → DEPLOY.md 참고.
+
+### 방식 B — Docker
 
 ```bash
-./scripts/generate-cert.sh <서버IP>   # 예: ./scripts/generate-cert.sh 192.168.0.50
-```
+# 인증서 생성 (HTTPS, 오프라인 기능에 필요)
+./scripts/generate-cert.sh <서버IP>
 
-`certs/server.crt`, `certs/server.key` 가 생성됩니다.
-
-### 2. 실행
-
-```bash
+# 실행
 docker compose up -d --build
 ```
 
-- 웹(HTTPS): `https://<서버IP>:8443`  ← 태블릿은 이 주소로 접속
-- HTTP(`:8080`) 접속은 자동으로 HTTPS 로 리다이렉트
-- API: 같은 출처의 `/api` 로 프록시 (별도 포트 노출 불필요, 내부 5008)
-- DB와 미디어 파일은 `checksheet-data` 볼륨에 영구 보관
+- 웹(HTTPS): `https://<서버IP>:8443` (HTTP `:8080` 은 자동 HTTPS 전환)
+- 인증서 없이 빠르게 테스트만: `docker compose -f docker-compose.http.yml up -d --build` → `http://<서버IP>:5008`
+- DB·미디어는 `checksheet-data` 볼륨에 영구 보관
 
 ### 로그인 / 권한
 
@@ -108,7 +116,10 @@ docker compose up -d --build
 
 ## 데이터 백업 / 복원
 
-DB와 미디어 파일은 Docker 볼륨(`checksheet-data`)에 보관됩니다. 정기 백업을 권장합니다.
+**방식 A (Node.js):** 모든 데이터는 `server/data` 폴더에 있습니다.
+→ **`server/data` 폴더를 통째로 복사**하면 백업, 되돌려 넣으면 복원입니다.
+
+**방식 B (Docker):** 데이터는 Docker 볼륨(`checksheet-data`)에 있습니다.
 
 ```bash
 # 백업 (backups/checksheet-<timestamp>.tar.gz 생성)

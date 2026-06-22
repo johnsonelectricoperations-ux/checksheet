@@ -6,7 +6,7 @@
 
 ## 현재 상태
 
-- **현재 단계**: 보완 완료 + 배포 가이드 작성. F(실기기 테스트)만 사용자 직접 수행 대기
+- **현재 단계**: 보완 완료 + 배포(도커/도커없이 Node) 가이드 작성. 사용자 실기기 배포 단계
 - **브랜치**: `claude/epic-brown-v38qr4`
 - **최종 업데이트**: 2026-06-19
 
@@ -40,6 +40,14 @@
 ---
 
 ## 작업 로그
+
+### 2026-06-22 (배포 방식 추가: 도커 없이 Node)
+- 보안상 도커 설치 불가 환경 대응: Node.js 단독 실행 방식 추가
+  - Express 서버가 빌드된 웹(PWA)도 직접 제공(static + SPA fallback), nginx 불필요
+  - 서버 옵션 HTTPS(TLS_CERT_FILE/TLS_KEY_FILE)
+  - Windows 배치: setup-node.bat / start-node.bat, HTTP 테스트용 start/stop/logs.bat
+  - 접속 포트 5008 로 통일
+- 문서 동기화: README(방식 A/B), DEPLOY.md(방식 A/B), plan.md(스택/배포), task.md(I·J)
 
 ### 2026-06-19
 - 시스템 요구사항 정리 및 아키텍처 구상 완료

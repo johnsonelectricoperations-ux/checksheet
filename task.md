@@ -121,9 +121,16 @@
 - [ ] (후속) 기간별 통계 그래프
 
 ### I. 데이터 백업 ✅
-- [x] DB·미디어(Docker 볼륨) 백업 스크립트 (backup.sh)
-- [x] 복원 스크립트 (restore.sh, 확인 프롬프트)
+- [x] Docker 방식: 볼륨 백업/복원 스크립트 (backup.sh / restore.sh)
+- [x] Node 방식: `server/data` 폴더 통째 복사로 백업/복원
 - [x] README 백업/복원/cron 절차 문서화
+
+### J. 도커 없이 실행 (보안상 도커 불가 대응) ✅
+- [x] Node 서버가 빌드된 웹(PWA) 직접 제공 (nginx 불필요) + SPA 라우팅
+- [x] 서버 옵션 HTTPS 지원 (TLS_CERT_FILE / TLS_KEY_FILE)
+- [x] Windows 배치: setup-node.bat(설치+빌드) / start-node.bat(실행)
+- [x] HTTP 빠른 테스트 모드(docker-compose.http.yml) + start/stop/logs.bat
+- [x] 접속 포트 5008 통일, DEPLOY.md 방식 A(Node)/B(Docker) 문서화
 
 ---
 
