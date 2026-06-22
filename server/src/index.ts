@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { createServer as createHttpServer } from 'node:http';
+import { createServer as createHttpsServer } from 'node:https';
+import { join } from 'node:path';
 import { config } from './config.js';
 import { initSchema } from './db/index.js';
 import { seedAdmin } from './repos/users.js';
@@ -41,8 +44,37 @@ app.use('/api/inspections', requireAuth, inspections);
 app.use('/api/media', requireAuth, media);
 app.use('/api/files', requireAuth, files);
 
-app.listen(config.port, () => {
-  console.log(`[server] http://localhost:${config.port} 에서 실행 중`);
+// 빌드된 웹(PWA) 정적 파일 제공 — 도커/nginx 없이 이 서버 하나로 웹까지 서비스
+if (existsSync(config.webDir)) {
+  app.use(express.static(config.webDir));
+  // SPA 라우팅: /api 가 아닌 경로는 index.html 로
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(join(config.webDir, 'index.html'));
+  });
+}
+
+// HTTPS 인증서가 지정되어 있으면 https, 아니면 http 로 기동
+const useHttps =
+  config.tlsCertFile &&
+  config.tlsKeyFile &&
+  existsSync(config.tlsCertFile) &&
+  existsSync(config.tlsKeyFile);
+
+const server = useHttps
+  ? createHttpsServer(
+      {
+        cert: readFileSync(config.tlsCertFile!),
+        key: readFileSync(config.tlsKeyFile!),
+      },
+      app,
+    )
+  : createHttpServer(app);
+
+server.listen(config.port, () => {
+  const proto = useHttps ? 'https' : 'http';
+  console.log(`[server] ${proto}://localhost:${config.port} 에서 실행 중`);
   console.log(`[server] DB: ${config.dbPath}`);
   console.log(`[server] 미디어 저장 경로: ${config.mediaDir}`);
+  console.log(`[server] 웹 제공: ${existsSync(config.webDir) ? config.webDir : '(빌드 없음)'}`);
 });
