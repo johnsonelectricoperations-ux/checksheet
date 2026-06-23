@@ -11,6 +11,7 @@ import TemplateEditor from './pages/TemplateEditor.js';
 import InspectionForm from './pages/InspectionForm.js';
 import ResultsList from './pages/ResultsList.js';
 import ResultDetail from './pages/ResultDetail.js';
+import Users from './pages/Users.js';
 
 export default function App() {
   const { online, pending, syncing, syncNow } = useSync();
@@ -41,6 +42,7 @@ export default function App() {
           <nav className="app__nav">
             <Link to="/">점검시트</Link>
             <Link to="/results">결과</Link>
+            {isAdmin && <Link to="/users">사용자</Link>}
           </nav>
           <div className="app__status" onClick={syncNow} title="지금 동기화">
             {pending > 0 && (
@@ -77,6 +79,10 @@ export default function App() {
             <Route path="/inspect/:templateId" element={<InspectionForm inspectorName={user.name} />} />
             <Route path="/results" element={<ResultsList />} />
             <Route path="/results/:id" element={<ResultDetail />} />
+            <Route
+              path="/users"
+              element={isAdmin ? <Users /> : <Navigate to="/" replace />}
+            />
           </Routes>
         </main>
       </div>

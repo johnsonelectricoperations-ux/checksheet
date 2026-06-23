@@ -179,6 +179,25 @@ body {
   background: #eceff1;
   color: #607d8b;
 }
+
+/* 사용자 관리 */
+.user-form__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.user-form__row input,
+.user-form__row select {
+  flex: 1;
+  min-width: 130px;
+}
+.msg {
+  color: #2e7d32;
+  background: #e8f5e9;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
 .inspect-field--fail {
   border-left: 4px solid #c62828;
 }
